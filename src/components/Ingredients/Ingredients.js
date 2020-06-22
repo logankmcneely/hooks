@@ -6,26 +6,34 @@ import Search from './Search';
 
 const Ingredients = () => {
 
-  const [ userIngredients, setUserIngredients] = useState([]);
+  const [userIngredients, setUserIngredients] = useState([]);
 
   const addIngredientHandler = ingredient => {
     setUserIngredients(prevIngredients => [
       ...prevIngredients,
-      {id: Math.random().toString(),
-      ...ingredient}
+      {
+        id: Math.random().toString(),
+        ...ingredient
+      }
     ]);
+  };
+
+  const removeIngredientHandler = id => {
+    setUserIngredients(prevIngredients => 
+      prevIngredients.filter((ingredient) => ingredient.id !== id)
+    );
   };
 
   return (
     <div className="App">
-      <IngredientForm 
-        onAddIngredient={addIngredientHandler}/>
+      <IngredientForm
+        onAddIngredient={addIngredientHandler} />
 
       <section>
         <Search />
-        <IngredientList 
+        <IngredientList
           ingredients={userIngredients}
-          onRemoveItem={()=>{}}/>
+          onRemoveItem={removeIngredientHandler} />
       </section>
     </div>
   );
