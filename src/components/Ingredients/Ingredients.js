@@ -7,8 +7,10 @@ import Search from './Search';
 const Ingredients = () => {
 
   const [userIngredients, setUserIngredients] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const addIngredientHandler = ingredient => {
+    setIsLoading(true);
     fetch('https://react-hooks-bb805.firebaseio.com/ingredients.json', {
       method: 'POST',
       body: JSON.stringify(ingredient),
@@ -16,6 +18,7 @@ const Ingredients = () => {
         'Content-Type': 'application/json'
       }
     }).then(response => {
+      setIsLoading(false);
       return response.json();
     }).then(responseData => {
       setUserIngredients(prevIngredients => [
@@ -29,9 +32,15 @@ const Ingredients = () => {
   };
 
   const removeIngredientHandler = id => {
-    setUserIngredients(prevIngredients =>
-      prevIngredients.filter((ingredient) => ingredient.id !== id)
-    );
+    setIsLoading(true);
+    fetch(`https://react-hooks-bb805.firebaseio.com/ingredients/${id}.json`, {
+      method: 'DELETE'
+    }).then(response => {
+      setIsLoading(false);
+      setUserIngredients(prevIngredients =>
+        prevIngredients.filter((ingredient) => ingredient.id !== id)
+      );
+    })
   };
 
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
@@ -41,10 +50,11 @@ const Ingredients = () => {
   return (
     <div className="App">
       <IngredientForm
-        onAddIngredient={addIngredientHandler} />
+        onAddIngredient={addIngredientHandler}
+        loading={isLoading} />
 
       <section>
-        <Search onLoadIngredients={filteredIngredientsHandler}/>
+        <Search onLoadIngredients={filteredIngredientsHandler} />
         <IngredientList
           ingredients={userIngredients}
           onRemoveItem={removeIngredientHandler} />
